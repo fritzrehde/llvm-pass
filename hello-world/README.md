@@ -1,6 +1,6 @@
 # Hello World
 
-Print out the name of non-external functions that exist in the program; No modification of the program (Adapted from the [`HelloWorld: Your First Pass`](https://github.com/banach-space/llvm-tutor#helloworld-your-first-pass) guide)
+Print out the name of non-external functions that exist in the program; No modification of the program (adapted from the guide [HelloWorld: Your First Pass](https://github.com/banach-space/llvm-tutor#helloworld-your-first-pass))
 
 ## Steps to run
 
