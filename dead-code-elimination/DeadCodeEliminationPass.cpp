@@ -8,21 +8,22 @@
 using namespace llvm;
 
 namespace {
-
 //
 // Implementation
 //
 static bool eliminateDeadCode(Function &F, TargetLibraryInfo *TLI, TargetTransformInfo *TTI) {
     bool MadeChange = false;
-    bool AllUnreachableBBsEliminated = false;
+    bool FoundDeadInstr;
 
-    while (!AllUnreachableBBsEliminated) {
-        std::vector<Instruction*> Dead;
+    do {
+        FoundDeadInstr = false;
+        std::vector<Instruction *> Dead;
 
         // Find all instructions to be removed
         for (inst_iterator I = inst_begin(F), E = inst_end(F); I != E; ++I) {
             if (isInstructionTriviallyDead(&*I, TLI)) {
                 Dead.push_back(&*I);
+                FoundDeadInstr = true;
                 MadeChange = true;
             }
         }
@@ -32,7 +33,7 @@ static bool eliminateDeadCode(Function &F, TargetLibraryInfo *TLI, TargetTransfo
             I->eraseFromParent();
         }
 
-        // eliminate unreachable basic blocks
+        // Eliminate unreachable basic blocks
         std::vector<BasicBlock *> BlocksToSimplify;
         for (BasicBlock &BB : F) {
             BlocksToSimplify.push_back(&BB);
@@ -40,12 +41,12 @@ static bool eliminateDeadCode(Function &F, TargetLibraryInfo *TLI, TargetTransfo
 
         for (BasicBlock *BB : BlocksToSimplify) {
             if (simplifyCFG(BB, *TTI)) {
+                // Unreachable BB has been deleted
+                FoundDeadInstr = true;
                 MadeChange = true;
-            } else {
-                AllUnreachableBBsEliminated = true;
             }
         }
-    }
+    } while (FoundDeadInstr);
 
     return MadeChange;
 }
