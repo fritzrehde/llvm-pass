@@ -22,5 +22,6 @@ clang -O1 -S -emit-llvm ./inputs/input_hello_world.c -o input_hello_world.ll
 ```
 5. Run the `HelloWorld` pass with `opt` using the generated shared library `libHelloWorld.so` (`libHelloWorld.dylib` on MacOS)
 ```sh
+# currently in "hello-world" directory
 opt -load-pass-plugin ./build/libHelloWorld.so -passes=hello-world -disable-output ./inputs/input_hello_world.ll
 ```
